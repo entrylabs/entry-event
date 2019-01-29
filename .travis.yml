@@ -10,9 +10,10 @@ env:
         - GH_REF: github.com/entrylabs/entry-tool.git
         - GH_REPO: https://github.com/entrylabs/entry-tool.git
 cache:
+    yarn: true
     directories:
         - node_modules
-        - '$HOME/.npm'
+        - '$HOME/.yarn-cache'
 jobs:
     include:
         - stage: npm release
