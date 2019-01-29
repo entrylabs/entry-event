@@ -1,0 +1,14 @@
+#logs
+*.log
+
+#modules
+node_modules
+
+#config
+.travis.yml
+.prettierrc
+babel.config.js
+rollup.config.js
+
+#lock
+yarn.lock
