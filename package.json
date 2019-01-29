@@ -7,6 +7,7 @@
     "license": "MIT",
     "private": false,
     "scripts": {
+        "test": "echo 1",
         "dist": "rollup -c"
     },
     "dependencies": {},
