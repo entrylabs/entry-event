@@ -1,5 +1,5 @@
 class EntryEvent {
-    #_dom;
+    _dom;
     constructor(dom) {
         if (!dom) {
             throw new Error('dom is undefined');
@@ -7,15 +7,15 @@ class EntryEvent {
         if (!EntryEvent.elementMap) {
             EntryEvent.elementMap = new Map();
         }
-        this.#dom = dom;
+        this.dom = dom;
     }
 
-    set #dom(dom) {
-        this.#_dom = dom;
+    set dom(dom) {
+        this._dom = dom;
     }
 
-    get #dom() {
-        return this.#_dom;
+    get dom() {
+        return this._dom;
     }
 
     on = (types, callback, option = false) => {
@@ -24,14 +24,14 @@ class EntryEvent {
         }
         const trimTypes = types.trim();
         trimTypes.split(' ').forEach((type) => {
-            const eventMap = EntryEvent.elementMap.get(this.#dom) || {};
+            const eventMap = EntryEvent.elementMap.get(this.dom) || {};
             if (eventMap[type]) {
                 eventMap[type].push(callback);
             } else {
                 eventMap[type] = [callback];
             }
-            EntryEvent.elementMap.set(this.#dom, eventMap);
-            this.#addEvent(type, callback, option);
+            EntryEvent.elementMap.set(this.dom, eventMap);
+            this.addEvent(type, callback, option);
         });
 
         return this;
@@ -40,21 +40,21 @@ class EntryEvent {
     off(types = '', callback, option = false) {
         const trimTypes = types.trim();
         trimTypes.split(' ').forEach((type) => {
-            const eventMap = EntryEvent.elementMap.get(this.#dom) || {};
+            const eventMap = EntryEvent.elementMap.get(this.dom) || {};
             Object.entries(eventMap).forEach(([key, value = []]) => {
                 const filtered = value.filter((func) => {
                     if (!callback || callback === func) {
                         if (type === key) {
-                            this.#removeEvent(type, func, option);
+                            this.removeEvent(type, func, option);
                             return false;
                         } else if (type === '') {
-                            this.#removeEvent(key, func, option);
+                            this.removeEvent(key, func, option);
                             return false;
                         } else if (key.indexOf('.') > -1) {
                             const [event, namespace = ''] = key.split('.');
-                            const [e, n] = this.#getEventName(type);
+                            const [e, n] = this.getEventName(type);
                             if (e === event || n === namespace) {
-                                this.#removeEvent(key, func, option);
+                                this.removeEvent(key, func, option);
                                 return false;
                             }
                         }
@@ -67,16 +67,16 @@ class EntryEvent {
                     delete eventMap[key];
                 }
             });
-            EntryEvent.elementMap.set(this.#dom, eventMap);
+            EntryEvent.elementMap.set(this.dom, eventMap);
         });
         return this;
     }
 
-    #getType(type) {
+    getType(type) {
         return type.split('.')[0];
     }
 
-    #getEventName(type) {
+    getEventName(type) {
         if (type.indexOf('.') > -1) {
             return type.split('.');
         } else {
@@ -84,12 +84,12 @@ class EntryEvent {
         }
     }
 
-    #addEvent(type, callback, option) {
-        this.#dom.addEventListener(this.#getType(type), callback, option);
+    addEvent(type, callback, option) {
+        this.dom.addEventListener(this.getType(type), callback, option);
     }
 
-    #removeEvent(type, callback, option) {
-        this.#dom.removeEventListener(this.#getType(type), callback, option);
+    removeEvent(type, callback, option) {
+        this.dom.removeEventListener(this.getType(type), callback, option);
     }
 }
 
