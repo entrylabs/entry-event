@@ -1,5 +1,6 @@
 class EntryEvent {
     _dom;
+    _data;
     constructor(dom) {
         if (!dom) {
             throw new Error('dom is undefined');
@@ -16,6 +17,20 @@ class EntryEvent {
 
     get dom() {
         return this._dom;
+    }
+
+    set data(data) {
+        this._data = data;
+    }
+
+    get data() {
+        return this._data;
+    }
+
+    destroy() {
+        this.off();
+        this._data = null;
+        this._dom = null;
     }
 
     on = (types, callback, option = false) => {
@@ -50,7 +65,7 @@ class EntryEvent {
                         } else if (type === '') {
                             this.removeEvent(key, func, option);
                             return false;
-                        } else if (key.indexOf('.') > -1) {
+                        } else if (key.indexOf('.') > -1 && type.indexOf('.') === -1) {
                             const [event, namespace = ''] = key.split('.');
                             const [e, n] = this.getEventName(type);
                             if (e === event || n === namespace) {
@@ -90,6 +105,28 @@ class EntryEvent {
 
     removeEvent(type, callback, option) {
         this.dom.removeEventListener(this.getType(type), callback, option);
+    }
+
+    trigger(type, event = {}) {
+        if(!type) {
+            return console.warn('%cEntryEvent: %ctype argument empty', "color: blue; font-weight: bold;", "");
+        }
+        const eventMap = EntryEvent.elementMap.get(this.dom) || {};
+        Object.entries(eventMap).forEach(([key, value = []]) => {
+            let triggerFunc = false;
+            if (type === key) {
+                triggerFunc = true;
+            } else if (key.indexOf('.') > -1 && type.indexOf('.') === -1) {
+                const [event, namespace = ''] = key.split('.');
+                const [e, n] = this.getEventName(type);
+                if (e === event && n === namespace) {
+                    triggerFunc = true;
+                }
+            }
+            if(triggerFunc) {
+                value.forEach((func) => func(event));
+            }
+        });
     }
 }
 
