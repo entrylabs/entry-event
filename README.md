@@ -15,6 +15,7 @@ import Event from '@entrylabs/event';
 
 const target = new Event(document);
 target.on('click', e => {console.log(e.type)});
+target.trigger('click');
 target.off('click');
 ```
 
